@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+
+void insertNode(struct Node** head, int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+
+    if (*head == NULL) {
+        newNode->prev = NULL;
+        *head = newNode;
+    } else {
+        struct Node* current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newNode;
+        newNode->prev = current;
+    }
+}
+
+// Function to search for an element in the linked list
+int searchElement(struct Node* head, int target) {
+    struct Node* current = head;
+    while (current != NULL) {
+        if (current->data == target) {
+            return 1; // Element found
+        }
+        current = current->next;
+    }
+    return 0; // Element not found
+}
+
+int main() {
+    struct Node* head = NULL;
+    int N =6; // Number of elements in the linked list
+    printf("ENter the elements\n");
+    // Insert elements into the linked list
+    for (int i = 1; i <= N; ++i) {
+        int a;
+        scanf("%d", &a);
+        insertNode(&head, a);
+    }
+
+    int target;
+    printf("Enter the element to search: ");
+    scanf("%d", &target);
+
+
+    if (searchElement(head, target)) {
+        printf("Element %d found in the linked list.\n", target);
+    } else {
+        printf("Element %d not found in the linked list.\n", target);
+    }
+
+    FILE* textFile = fopen("linked_list.txt", "w");
+    struct Node* current = head;
+    while (current != NULL) {
+        fprintf(textFile, "%d\n", current->data);
+        current = current->next;
+    }
+    fclose(textFile);
+
+
+    FILE* binaryFile = fopen("linked_list.bin", "wb");
+    current = head;
+    while (current != NULL) {
+        fwrite(&(current->data), sizeof(int), 1, binaryFile);
+        current = current->next;
+    }
+    fclose(binaryFile);
+
+    while (head != NULL) {
+        struct Node* temp = head;
+        head = head->next;
+        free(temp);
+    }
+
+    return 0;
+}
